@@ -10,37 +10,6 @@ const ObjectId = require('mongodb').ObjectID;
 
 app.set('case sensitive routing', true);
 
-app.get('/getNearby', (req, res) => {
-    var config = {
-        method: 'get',
-        url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=39.95578103620712%2C-75.20390345632566&radius=1500&type=restaurant&key=AIzaSyAIyIHGG8l_L5rQsGFd4joquCTm5DgIHvU',
-        // url: 'https://maps.googleapis.com/maps/api/place/nearbysearch/json?location=12.896320380481642%2C80.22045068754917&radius=1500&type=restaurant&key=AIzaSyAIyIHGG8l_L5rQsGFd4joquCTm5DgIHvU',
-        headers: { },
-      };
-      
-      axios(config)
-      .then(function (response) {
-        console.log(JSON.stringify(response.data));
-        res.send(response.data);
-      })
-      .catch(function (error) {
-        console.log(error);
-      });  
-})
-
-app.post('/createPlan', async (req, res) => {
-    console.log("created new plan");
-    console.log(req.body);
-    const plan = new Plan(req.body);
-  
-    try {
-      await plan.save();
-      res.send(plan);
-    } catch (error) {
-      res.status(500).send(error);
-    }
-})
-
 
 // here are the real routes, above are for testing
 
