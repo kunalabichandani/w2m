@@ -8,7 +8,7 @@ export const Landing = () =>  {
     let navigate = useNavigate();
 
     const newEvent = () => {
-        navigate("/createplan", { replace: true });
+        navigate("/create", { replace: true });
     }
 
     return (

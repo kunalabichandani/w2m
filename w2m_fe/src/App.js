@@ -4,6 +4,8 @@ import SwipeViewContainer from './components/SwipeViewContainer';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import CreatePlan from './components/CreatePlan';
 import Header from './components/Header';
+import PlanContainer from './components/Plan/PlanContainer';
+import JoinContainer from './components/Join/JoinContainer';
 
 function App() {
   return (
@@ -12,9 +14,10 @@ function App() {
     <Header />
       <Routes>
         <Route exact path="/" element={<Landing />} />
-        <Route exact path="/createplan" element={<CreatePlan />} />
+        <Route exact path="/create" element={<CreatePlan />} />
         <Route exact path="/swipeview" element={<SwipeViewContainer />} />
-        <Route path="/plan/:url" element={<Landing />} />
+        <Route path="/:url/join" element={<JoinContainer />} />
+        <Route path="/:url" element={<PlanContainer />} />
       </Routes>
     </div>
   </Router>

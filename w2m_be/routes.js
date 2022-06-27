@@ -10,7 +10,6 @@ const ObjectId = require('mongodb').ObjectID;
 
 app.set('case sensitive routing', true);
 
-
 // here are the real routes, above are for testing
 
 app.post('/newPlan', async (req, res) => {
@@ -20,7 +19,7 @@ app.post('/newPlan', async (req, res) => {
     const url = generateURL();
     // get the nearby restaurants from google places api based on location/radius
     const location = req.body.location; 
-    const radius = req.body.radius ?  req.body.radius : 1500;
+    const radius = req.body.radius ?  parseInt(req.body.radius) : 1500;
     const name = req.body.name;
     const response = await getNearby(location, radius); 
     // randomize and slice the returned restaurant object array
@@ -60,30 +59,38 @@ app.get('/getFullPlan', (req, res) => {
   })
 })
 
-app.post('/submitToPlan', (req, res) => {
+app.post('/submitToPlan', async (req, res) => {
+  console.log("wtf");
   const reqPlanURL = req.body.url;
   const userName = req.body.userName; 
   const restaurants = req.body.restaurants;
-  restaurants.forEach((element) => {
-    Plan.findOneAndUpdate({url: reqPlanURL, "restaurants._id": new ObjectId(element)}, 
-      {$push: {"restaurants.$.users": userName}}, (err, doc) => {
-        if (err){
-          return res.status(400).json({added: false});
-        } else {
-          return res.status(200).json({added: true});
-        }
-      }
-    )
-  })
+  (async () => {
+    try {
+      restaurants.forEach(async (element) => {
+        await Plan.findOneAndUpdate({url: reqPlanURL, "restaurants._id": new ObjectId(element)}, 
+          {$push: {"restaurants.$.users": userName}}
+        )
+      })
+      return res.status(200).json({added: true}); 
+    } catch (err) {
+      console.error(err)
+      return res.status(400).json({added: false});
+    }
+  })()
+  // *** the below method doesnt work because it does res.send for each item in the restaurants array ***
+  // const updatePromises = restaurants.forEach((element) => {
+  //   console.log("hello")
+  //   Plan.findOneAndUpdate({url: reqPlanURL, "restaurants._id": new ObjectId(element)}, 
+  //     {$push: {"restaurants.$.users": userName}} , (err, doc) => {
+  //   console.log(err);
+  //   if (err){
+  //     console.log('first branch');
+  //   return res.status(400).json({added: false});  
+  //   } else {
+  //     console.log('second branch');
+  //   return res.status(200).json({added: true});
+  //   }
+  // })
 })
-
-// app.post('/blah', (req, res) => {
-//     const location = req.body.location; 
-//     const radius = req.body.radius ?  req.body.radius : 1500;
-//     getNearby(location, radius).then((data) => (console.log(data)));
-//     // const test = await getNearby(location, 200); 
-//     // console.log(test);
-// })
-
 
 module.exports = app;
